@@ -12,15 +12,26 @@ os.environ["GROQ_API_KEY"] = "gsk_aGQGHasoigRaBoLyVadPWGdyb3FYxt6aMrzZEdCjA8QLGh
 # Page config
 st.set_page_config(page_title="📄 Chat with PDF", layout="wide")
 
-# Only Light theme colors now
-bg_color = "#f0f2f6"
-app_bg = "rgba(255, 255, 255, 0.6)"
-sidebar_bg = "rgba(255, 255, 255, 0.9)"
-text_color = "#000000"
-input_bg = "rgba(240, 240, 240, 0.9)"
-accent_color = "#2AA198"
+# Theme switcher radio
+theme = st.radio("🌓 Select Theme", ["Dark", "Light"], horizontal=True)
 
-# Inject CSS styles (Light theme only)
+# Define colors based on theme
+if theme == "Dark":
+    bg_color = "rgba(0, 0, 0, 0.85)"
+    app_bg = "rgba(20, 20, 20, 0.6)"
+    sidebar_bg = "rgba(10, 10, 10, 0.9)"
+    text_color = "#FFFFFF"
+    input_bg = "rgba(50, 50, 50, 0.5)"
+    accent_color = "#2AA198"
+else:
+    bg_color = "#f0f2f6"
+    app_bg = "rgba(255, 255, 255, 0.6)"
+    sidebar_bg = "rgba(255, 255, 255, 0.9)"
+    text_color = "#000000"
+    input_bg = "rgba(240, 240, 240, 0.9)"
+    accent_color = "#2AA198"
+
+# Inject CSS styles
 st.markdown(f"""
 <style>
 body {{
@@ -37,14 +48,14 @@ body {{
     color: {text_color};
 }}
 h1, h2, h3, h4, .stRadio label, label {{
-    color: {text_color} !important;
+    color: {"text_color"} !important;
     font-weight: 600;
 }}
 [data-testid="stSidebar"] {{
     background: {sidebar_bg} !important;
     color: {text_color} !important;
     backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(0,0,0,0.1);
+    border-right: 1px solid rgba(255,255,255,0.1);
 }}
 [data-testid="stSidebar"] * {{
     color: {text_color} !important;
@@ -57,13 +68,13 @@ h1, h2, h3, h4, .stRadio label, label {{
     padding: 0.5rem;
 }}
 .stTextInput input::placeholder {{
-    color: #777777;
+    color: #bbbbbb;
 }}
-.stMarkdown, .stText, .stSubheader, .stHeader, p {{
+.stMarkdown, .stText {{
     color: {text_color} !important;
 }}
 .stSuccess {{
-    background-color: rgba(0, 0, 0, 0.03) !important;
+    background-color: rgba(255, 255, 255, 0.07) !important;
     border-left: 6px solid {accent_color};
     padding: 1rem;
     border-radius: 12px;
@@ -80,7 +91,7 @@ button {{
 .stRadio > label {{
     font-size: 1rem;
     font-weight: 600;
-    color: {text_color} !important;
+    color: {"text_color"} !important;
 }}
 .stRadio div[role="radiogroup"] > label {{
     color: {text_color} !important;
@@ -93,6 +104,7 @@ button {{
 with st.sidebar:
     st.markdown("### 📁 Upload PDF")
     file = st.file_uploader("Upload your PDF", type="pdf")
+
     st.write("Then ask your question below!")
 
 # Main UI
@@ -102,7 +114,7 @@ if file is not None:
     pdf_pages = PdfReader(file)
     text = ""
     for page in pdf_pages.pages:
-        text += page.extract_text()
+        text += page.extract_text()  # Note: was missing += in your original code
 
     # Split the text into chunks
     text_splitter = RecursiveCharacterTextSplitter(
